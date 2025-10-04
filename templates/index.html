@@ -1,0 +1,152 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Plant Disease Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Plant Disease Detector</h1>
+            <p>Upload a plant leaf image to identify the most likely disease.</p>
+        </header>
+
+        <section class="panel">
+            <form id="upload-form">
+                <label for="image-input">Image file</label>
+                <input id="image-input" name="image" type="file" accept="image/*" required>
+                <button type="submit">Predict</button>
+            </form>
+            <div id="status" class="status" hidden></div>
+        </section>
+
+        <section class="panel" id="preview" hidden>
+            <h2>Preview</h2>
+            <img id="preview-image" alt="Uploaded preview">
+        </section>
+
+        <section class="panel" id="prediction" hidden>
+            <h2>Prediction</h2>
+            <p id="prediction-label"></p>
+            <p id="prediction-confidence"></p>
+            <details>
+                <summary>All class probabilities</summary>
+                <ul id="probability-list"></ul>
+            </details>
+        </section>
+
+        <section class="panel class-list" {% if not class_names %}hidden{% endif %}>
+            <h2>Supported classes</h2>
+            <ul>
+                {% for name in class_names %}
+                <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+
+    <script>
+    const form = document.getElementById('upload-form');
+    const imageInput = document.getElementById('image-input');
+    const statusBox = document.getElementById('status');
+    const previewSection = document.getElementById('preview');
+    const previewImage = document.getElementById('preview-image');
+    const predictionSection = document.getElementById('prediction');
+    const predictionLabel = document.getElementById('prediction-label');
+    const predictionConfidence = document.getElementById('prediction-confidence');
+    const probabilityList = document.getElementById('probability-list');
+
+    function formatLabel(label) {
+        if (!label) {
+            return "";
+        }
+        return label.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    imageInput.addEventListener('change', () => {
+        const file = imageInput.files[0];
+        if (!file) {
+            previewSection.hidden = true;
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = event => {
+            previewImage.src = event.target.result;
+            previewSection.hidden = false;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const file = imageInput.files[0];
+        if (!file) {
+            setStatus('Please choose an image first.', true);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        setStatus('Running inference...', false);
+        predictionSection.hidden = true;
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const payload = await response.json().catch(() => ({ error: response.statusText }));
+                throw new Error(payload.error || 'Prediction failed');
+            }
+
+            const result = await response.json();
+            renderPrediction(result);
+            setStatus('', false, true);
+        } catch (error) {
+            setStatus(error.message || 'Something went wrong.', true);
+        }
+    });
+
+    function setStatus(message, isError, hide = false) {
+        if (hide || !message) {
+            statusBox.hidden = true;
+            statusBox.textContent = '';
+            return;
+        }
+
+        statusBox.textContent = message;
+        statusBox.classList.toggle('error', isError);
+        statusBox.hidden = false;
+    }
+
+    function renderPrediction(result) {
+        if (!result || !result.label) {
+            throw new Error('No prediction returned');
+        }
+        const readableLabel = formatLabel(result.label);
+        const lowerLabel = readableLabel.toLowerCase();
+        if (lowerLabel.includes('healthy')) {
+            predictionLabel.textContent = `The plant appears healthy (class: ${readableLabel}).`;
+        } else {
+            predictionLabel.textContent = `This plant is most likely affected by: ${readableLabel}.`;
+        }
+        const confidencePercent = (result.confidence * 100).toFixed(2);
+        predictionConfidence.textContent = `Confidence: ${confidencePercent}%`;
+
+        probabilityList.innerHTML = '';
+        (result.probabilities || []).forEach(item => {
+            const listItem = document.createElement('li');
+            const percent = item.confidence !== undefined ? (item.confidence * 100).toFixed(2) : '0.00';
+            listItem.textContent = `${formatLabel(item.label)}: ${percent}%`;
+            probabilityList.appendChild(listItem);
+        });
+
+        predictionSection.hidden = false;
+    }
+    </script>
+</body>
+</html>
