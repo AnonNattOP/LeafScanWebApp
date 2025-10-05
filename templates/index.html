@@ -1,49 +1,104 @@
 ﻿<!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="utf-8">
-    <title>Plant Disease Detector</title>
+    <title>ตัวตรวจสอบโรคพืชจากใบ (Plant Disease Detector)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <main class="container">
         <header>
-            <h1>Plant Disease Detector</h1>
-            <p>Upload a plant leaf image to identify the most likely disease.</p>
+            <h1>ตัวตรวจสอบโรคพืชจากใบ</h1>
+            <p>อัปโหลดภาพใบพืชเพื่อให้ระบบคาดคะเนโรคที่เป็นไปได้มากที่สุด</p>
         </header>
 
         <section class="panel">
+            <h2>คำแนะนำการถ่ายภาพใบพืช</h2>
+            <ol>
+                <li><strong>ถ่ายภาพใบพืชเพียงใบเดียวต่อครั้ง</strong> — วางใบให้แผ่ราบ ไม่ซ้อนกับใบอื่น และหลีกเลี่ยงการถ่ายหลายใบในภาพเดียว</li>
+                <li><strong>ถ่ายภาพจากมุมตรงด้านบน (Top View)</strong> — จัดกล้องให้อยู่เหนือใบโดยตรง ไม่เอียง เพื่อให้เห็นรูปทรงและลวดลายใบครบถ้วน</li>
+                <li><strong>ถ่ายในที่ที่มีแสงเพียงพอ</strong> — แนะนำแสงธรรมชาติหรือบริเวณที่สว่างทั่วถึง หลีกเลี่ยงแสงย้อนและเงาบังใบ</li>
+                <li><strong>ใช้พื้นหลังเรียบและตัดกับสีของใบ</strong> — เช่น พื้นสีขาว เทา หรือสีที่ต่างจากใบ เพื่อให้ระบบแยกใบจากพื้นหลังได้ดีขึ้น</li>
+            </ol>
+            <div class="photo-guide">
+                <h3>ตัวอย่างภาพที่ควรถ่าย</h3>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/should/potato.JPG') }}" alt="ตัวอย่างใบมันฝรั่งบนพื้นหลังเรียบ">
+                        <figcaption>ใบมันฝรั่ง</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/should/tomato.JPG') }}" alt="ตัวอย่างใบมะเขือเทศที่แผ่ราบ">
+                        <figcaption>ใบมะเขือเทศ</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/should/papper_bell.JPG') }}" alt="ตัวอย่างใบพริกที่ถ่ายจากมุมตรง">
+                        <figcaption>ใบพริกหวาน</figcaption>
+                    </figure>
+                </div>
+                <h3>ตัวอย่างภาพที่ไม่ควรถ่าย</h3>
+                <div class="photo-grid photo-grid--bad">
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/shouldnot/potato.JPG') }}" alt="ตัวอย่างภาพมันฝรั่งที่ไม่ควรถ่าย">
+                    </figure>
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/shouldnot/tomato.JPG') }}" alt="ตัวอย่างภาพมะเขือเทศที่ไม่ควรถ่าย">
+                    </figure>
+                    <figure>
+                        <img src="{{ url_for('static', filename='img/shouldnot/tree.JPG') }}" alt="ตัวอย่างภาพรวมหลายใบที่ไม่เหมาะสม">
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>หมายเหตุ (Disclaimer)</h2>
+            <p>ระบบนี้เป็นเครื่องมือช่วยวิเคราะห์เบื้องต้นจากภาพใบพืชเท่านั้น ผลการตรวจอาจมีความคลาดเคลื่อนหรือไม่ถูกต้อง 100% เนื่องจากปัจจัยด้านภาพ แสง หรือมุมกล้อง โปรดใช้ผลลัพธ์เพื่อประกอบการตัดสินใจ และปรึกษาผู้เชี่ยวชาญทางการเกษตรเพื่อยืนยันเมื่อจำเป็น</p>
+            <p lang="en"><em>This system provides a preliminary plant disease analysis based on leaf images. Results may contain errors or inaccuracies due to lighting, image quality, or angle. Please use the result as a reference only and consult agricultural experts for confirmation.</em></p>
+        </section>
+
+        <section class="panel">
             <form id="upload-form">
-                <label for="image-input">Image file</label>
+                <label for="image-input">ไฟล์รูปภาพ</label>
                 <input id="image-input" name="image" type="file" accept="image/*" required>
-                <button type="submit">Predict</button>
+                <button type="submit">ทำนายผล</button>
             </form>
             <div id="status" class="status" hidden></div>
         </section>
 
         <section class="panel" id="preview" hidden>
-            <h2>Preview</h2>
-            <img id="preview-image" alt="Uploaded preview">
+            <h2>ตัวอย่างภาพ</h2>
+            <img id="preview-image" alt="ตัวอย่างรูปที่อัปโหลด">
         </section>
 
         <section class="panel" id="prediction" hidden>
-            <h2>Prediction</h2>
+            <h2>ผลการทำนาย</h2>
             <p id="prediction-label"></p>
             <p id="prediction-confidence"></p>
+            <article id="disease-details" class="disease-details" hidden>
+                <h3 id="disease-name"></h3>
+                <p id="disease-cause"></p>
+                <p id="disease-symptoms"></p>
+                <div>
+                    <h4>แนวทางรักษาเบื้องต้น</h4>
+                    <ul id="disease-treatment"></ul>
+                </div>
+            </article>
             <details>
-                <summary>All class probabilities</summary>
+                <summary>ความน่าจะเป็นของทุกคลาส</summary>
                 <ul id="probability-list"></ul>
             </details>
         </section>
 
         <section class="panel class-list" {% if not class_names %}hidden{% endif %}>
-            <h2>Supported classes</h2>
+            <h2>ชนิดโรคพืชที่สามารถตรวจสอบได้</h2>
             <ul>
                 {% for name in class_names %}
-                <li>{{ name }}</li>
+                <li>{{ name|replace('__', ' ')|replace('_', ' ') }}</li>
                 {% endfor %}
             </ul>
         </section>
+
     </main>
 
     <script>
@@ -56,11 +111,136 @@
     const predictionLabel = document.getElementById('prediction-label');
     const predictionConfidence = document.getElementById('prediction-confidence');
     const probabilityList = document.getElementById('probability-list');
+    const diseaseDetailsSection = document.getElementById('disease-details');
+    const diseaseName = document.getElementById('disease-name');
+    const diseaseCause = document.getElementById('disease-cause');
+    const diseaseSymptoms = document.getElementById('disease-symptoms');
+    const diseaseTreatmentList = document.getElementById('disease-treatment');
+
+    const diseaseDetailsData = {
+        potato_early_blight: {
+            name: 'Potato Early blight (โรคใบจุดสีน้ำตาล / Alternaria solani)',
+            cause: 'สาเหตุ: เชื้อรา Alternaria solani',
+            symptoms: 'อาการ: ใบมีจุดสีน้ำตาลเข้ม มีวงแหวนซ้อนๆ กัน ใบแห้งร่วง',
+            treatments: [
+                'พ่นสารป้องกันกำจัดเชื้อรา เช่น แมนโคเซบ (Mancozeb) หรือ คลอโรทาโลนิล (Chlorothalonil)',
+                'เก็บเศษซากพืชที่เป็นโรคออกจากแปลง',
+                'ปลูกพืชหมุนเวียน เพื่อลดการสะสมของเชื้อราในดิน'
+            ]
+        },
+        potato_late_blight: {
+            name: 'Potato late blight (โรคใบไหม้ / Phytophthora infestans)',
+            cause: 'สาเหตุ: เชื้อรา Phytophthora infestans',
+            symptoms: 'อาการ: ใบมีรอยสีน้ำตาลไหม้ ขอบใบช้ำ และมีราด้านใต้ใบ',
+            treatments: [
+                'พ่นสารป้องกันกำจัดเชื้อรา เช่น เมทาแลกซิล (Metalaxyl) หรือ ไซมอกซานิล (Cymoxanil)',
+                'หลีกเลี่ยงการรดน้ำตอนเย็น เพื่อลดความชื้นในแปลง',
+                'ถอนต้นที่เป็นโรคแล้วเผาทำลายนอกแปลง'
+            ]
+        },
+        tomato_early_blight: {
+            name: 'Tomato Early blight (โรคใบจุดสีน้ำตาล)',
+            cause: 'สาเหตุ: Alternaria solani',
+            symptoms: 'อาการ: จุดกลมสีน้ำตาลเข้ม มีวงแหวน ใบเหลืองร่วง',
+            treatments: [
+                'พ่นสารป้องกันเชื้อรา เช่น แมนโคเซบ หรือ คลอโรทาโลนิล',
+                'ลดการให้น้ำมากเกินไป',
+                'ใช้เมล็ดพันธุ์ที่ปลอดเชื้อ'
+            ]
+        },
+        tomato_late_blight: {
+            name: 'Tomato late blight (โรคใบไหม้รุนแรง)',
+            cause: 'สาเหตุ: Phytophthora infestans',
+            symptoms: 'อาการ: ใบและผลมีจุดไหม้ดำ ช้ำ และมีราใต้ใบ',
+            treatments: [
+                'พ่นสารเมทาแลกซิล (Metalaxyl), ไซมอกซานิล (Cymoxanil) หรือ โพรพิเนบ (Propineb)',
+                'ถอนต้นที่เป็นโรคออกจากแปลง',
+                'ปลูกพืชหมุนเวียน'
+            ]
+        },
+        tomato_bacterial_spot: {
+            name: 'Tomato Bacterial leaf spot (โรคใบจุดแบคทีเรีย)',
+            cause: 'สาเหตุ: Xanthomonas campestris',
+            symptoms: 'อาการ: จุดสีน้ำตาลเข้มบนใบ มีรอยนูน และใบเหลืองร่วง',
+            treatments: [
+                'พ่นคอปเปอร์ไฮดรอกไซด์ (Copper hydroxide) หรือ คอปเปอร์ออกซีคลอไรด์ (Copper oxychloride)',
+                'หลีกเลี่ยงการรดน้ำแบบพ่นฝอย'
+            ]
+        },
+        tomato_leaf_mold: {
+            name: 'Tomato leaf mold (โรครากำมะหยี่)',
+            cause: 'สาเหตุ: Cladosporium fulvum',
+            symptoms: 'อาการ: ใต้ใบมีผงสปอร์สีน้ำตาลเทา ใบเหลืองแห้ง',
+            treatments: [
+                'พ่นสารป้องกันกำจัดเชื้อรา เช่น คลอโรทาโลนิล (Chlorothalonil) หรือ อะซอกซีสโตรบิน (Azoxystrobin)',
+                'เปิดระบายอากาศในโรงเรือน ลดความชื้น',
+                'ถอนใบที่เป็นโรค'
+            ]
+        },
+        tomato_target_spot: {
+            name: 'Tomato target spot (โรคใบจุดเป้ากระสุน)',
+            cause: 'สาเหตุ: Corynespora cassiicola',
+            symptoms: 'อาการ: ใบมีจุดกลมสีน้ำตาลมีขอบเหลือง เหมือนเป้ากระสุน',
+            treatments: [
+                'พ่นสารป้องกันเชื้อรา เช่น แมนโคเซบ (Mancozeb) หรือ คลอโรทาโลนิล (Chlorothalonil)',
+                'เก็บใบที่เป็นโรคออกจากแปลง',
+                'เว้นระยะปลูกให้โปร่ง'
+            ]
+        },
+        tomato_tomato_mosaic_virus: {
+            name: 'Tomato mosaic virus (ToMV)',
+            cause: 'สาเหตุ: ไวรัส Tomato Mosaic Virus',
+            symptoms: 'อาการ: ใบหงิก ขอบใบเหลือง ลายด่างสีเขียวเข้ม-อ่อน',
+            treatments: [
+                'ถอนต้นที่เป็นโรคออกจากแปลง',
+                'ทำลายพืชอาศัยของไวรัส เช่น วัชพืชในวงศ์มะเขือ',
+                'ล้างมือและเครื่องมือด้วยน้ำยาฆ่าเชื้อก่อนจับต้นใหม่'
+            ]
+        },
+        tomato_tomato_yellowleaf_curl_virus: {
+            name: 'Tomato Yellow Leaf Curl Virus (TYLCV)',
+            cause: 'สาเหตุ: ไวรัส Tomato Yellow Leaf Curl Virus (แมลงหวี่ขาวเป็นพาหะ)',
+            symptoms: 'อาการ: ใบม้วน ขอบใบเหลือง ลำต้นแคระ ผลน้อย',
+            treatments: [
+                'กำจัดแมลงหวี่ขาวด้วยสารพ่นอิมิดาโคลพริด (Imidacloprid)',
+                'ถอนต้นที่ติดโรคออก',
+                'ใช้มุ้งตาข่ายกันแมลง'
+            ]
+        },
+        tomato_spider_mites_two_spotted_spider_mite: {
+            name: 'Tomato - Spider Mites - Two-Spotted Spider Mite (ไรแดงสองจุด)',
+            cause: 'สาเหตุ: ไรแดง Tetranychus urticae',
+            symptoms: 'อาการ: ใบเหลืองเป็นจุดเล็ก ๆ มีใยแมงมุมใต้ใบ',
+            treatments: [
+                'พ่นสารกำจัดไร เช่น อะบาเม็กติน (Abamectin) หรือ เฟนไพรอกซีเมต (Fenpyroximate)',
+                'รดน้ำเพิ่มความชื้น เพราะไรชอบอากาศแห้ง',
+                'ใช้แมลงตัวห้ำ เช่น Phytoseiulus persimilis ควบคุมตามธรรมชาติ'
+            ]
+        },
+        tomato_septoria_leaf_spot: {
+            name: 'Tomato Septoria leaf spot (โรคใบจุดขาว)',
+            cause: 'สาเหตุ: เชื้อรา Septoria lycopersici',
+            symptoms: 'อาการ: ใบมีจุดกลมขาวขอบน้ำตาล ใบร่วง',
+            treatments: [
+                'พ่นสารแมนโคเซบ (Mancozeb) หรือ คลอโรทาโลนิล (Chlorothalonil)',
+                'เก็บใบที่เป็นโรคออกจากแปลง',
+                'ปรับให้แปลงปลูกโปร่งและแห้งเร็ว'
+            ]
+        },
+        pepper_bell_bacterial_spot: {
+            name: 'Pepper bell Bacterial spot (โรคใบจุดแบคทีเรีย)',
+            cause: 'สาเหตุ: Xanthomonas spp.',
+            symptoms: 'อาการ: ใบมีจุดน้ำตาล แผลแห้ง ใบเหลืองร่วง',
+            treatments: [
+                'พ่นสารคอปเปอร์ (Copper-based fungicide) เช่น คอปเปอร์ออกซีคลอไรด์ (Copper Oxychloride',
+                'ใช้เมล็ดพันธุ์ที่ผ่านการฆ่าเชื้อ',
+                'หลีกเลี่ยงการรดน้ำแบบพ่นฝอย'
+            ]
+        }
+    };
 
     function formatLabel(label) {
-        if (!label) {
-            return "";
-        }
+        if (!label) return "";
         return label.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
@@ -82,14 +262,14 @@
         event.preventDefault();
         const file = imageInput.files[0];
         if (!file) {
-            setStatus('Please choose an image first.', true);
+            setStatus('กรุณาเลือกภาพก่อน', true);
             return;
         }
 
         const formData = new FormData();
         formData.append('image', file);
 
-        setStatus('Running inference...', false);
+        setStatus('กำลังประมวลผล...', false);
         predictionSection.hidden = true;
 
         try {
@@ -100,14 +280,14 @@
 
             if (!response.ok) {
                 const payload = await response.json().catch(() => ({ error: response.statusText }));
-                throw new Error(payload.error || 'Prediction failed');
+                throw new Error(payload.error || 'การทำนายล้มเหลว');
             }
 
             const result = await response.json();
             renderPrediction(result);
             setStatus('', false, true);
         } catch (error) {
-            setStatus(error.message || 'Something went wrong.', true);
+            setStatus(error.message || 'เกิดข้อผิดพลาดบางอย่าง', true);
         }
     });
 
@@ -117,7 +297,6 @@
             statusBox.textContent = '';
             return;
         }
-
         statusBox.textContent = message;
         statusBox.classList.toggle('error', isError);
         statusBox.hidden = false;
@@ -125,17 +304,17 @@
 
     function renderPrediction(result) {
         if (!result || !result.label) {
-            throw new Error('No prediction returned');
+            throw new Error('ไม่มีผลการทำนาย');
         }
         const readableLabel = formatLabel(result.label);
         const lowerLabel = readableLabel.toLowerCase();
         if (lowerLabel.includes('healthy')) {
-            predictionLabel.textContent = `The plant appears healthy (class: ${readableLabel}).`;
+            predictionLabel.textContent = `พืชมีแนวโน้มว่าปกติ (คลาส: ${readableLabel})`;
         } else {
-            predictionLabel.textContent = `This plant is most likely affected by: ${readableLabel}.`;
+            predictionLabel.textContent = `พืชนี้มีแนวโน้มได้รับผลกระทบจาก: ${readableLabel}`;
         }
         const confidencePercent = (result.confidence * 100).toFixed(2);
-        predictionConfidence.textContent = `Confidence: ${confidencePercent}%`;
+        predictionConfidence.textContent = `ความเชื่อมั่น: ${confidencePercent}%`;
 
         probabilityList.innerHTML = '';
         (result.probabilities || []).forEach(item => {
@@ -145,7 +324,42 @@
             probabilityList.appendChild(listItem);
         });
 
+        renderDiseaseDetails(result.label);
         predictionSection.hidden = false;
+    }
+
+    function canonicalizeLabel(label) {
+        return (label || '')
+            .split('(')[0]
+            .replace(/[_\s]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .replace(/[^a-z0-9_]/gi, '')
+            .toLowerCase();
+    }
+
+    function renderDiseaseDetails(label) {
+        const key = canonicalizeLabel(label);
+        const info = diseaseDetailsData[key];
+
+        if (!info) {
+            diseaseDetailsSection.hidden = true;
+            diseaseName.textContent = '';
+            diseaseCause.textContent = '';
+            diseaseSymptoms.textContent = '';
+            diseaseTreatmentList.innerHTML = '';
+            return;
+        }
+
+        diseaseName.textContent = info.name;
+        diseaseCause.textContent = info.cause;
+        diseaseSymptoms.textContent = info.symptoms;
+        diseaseTreatmentList.innerHTML = '';
+        info.treatments.forEach(text => {
+            const listItem = document.createElement('li');
+            listItem.textContent = text;
+            diseaseTreatmentList.appendChild(listItem);
+        });
+        diseaseDetailsSection.hidden = false;
     }
     </script>
 </body>
