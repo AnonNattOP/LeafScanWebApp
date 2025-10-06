@@ -90,10 +90,11 @@
             </details>
         </section>
 
-        <section class="panel class-list" {% if not class_names %}hidden{% endif %}>
+        {% set disease_list = class_names_display if class_names_display else class_names %}
+        <section class="panel class-list" {% if not disease_list %}hidden{% endif %}>
             <h2>ชนิดโรคพืชที่สามารถตรวจสอบได้</h2>
             <ul>
-                {% for name in class_names %}
+                {% for name in disease_list %}
                 <li>{{ name|replace('__', ' ')|replace('_', ' ') }}</li>
                 {% endfor %}
             </ul>

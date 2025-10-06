@@ -1,0 +1,17 @@
+[
+    "Pepper_bell__Bacterial_spot (โรคใบจุดแบคทีเรีย / Xanthomonas campestris)",
+    "Pepper_bell__healthy (พริกหยวกสุขภาพดี)",
+    "Potato__Early_blight (โรคใบจุดสีน้ำตาล / Alternaria solani)",
+    "Potato__Late_blight (โรคใบไหม้ / Phytophthora infestans)",
+    "Potato__healthy (มันฝรั่งสุขภาพดี)",
+    "Tomato_Bacterial_spot (โรคใบจุดแบคทีเรีย / Xanthomonas campestris)",
+    "Tomato_Early_blight (โรคใบจุดสีน้ำตาล / Alternaria solani)",
+    "Tomato_Late_blight (โรคใบไหม้รุนแรง / Phytophthora infestans)",
+    "Tomato_Leaf_Mold (โรครากำมะหยี่ / Passalora fulva)",
+    "Tomato_Septoria_leaf_spot (โรคใบจุดขาว / Septoria lycopersici)",
+    "Tomato_Spider_mites_Two_spotted_spider_mite (ไรแดงสองจุด / Tetranychus urticae)",
+    "Tomato__Target_Spot (โรคใบจุดเป้ากระสุน / Corynespora cassiicola)",
+    "Tomato_YellowLeaf__Curl_Virus (TYLCV)",
+    "Tomato_mosaic_virus (ToMV)",
+    "Tomato_healthy (มะเขือเทศสุขภาพดี)"
+]
