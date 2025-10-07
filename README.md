@@ -47,7 +47,7 @@ The first PyTorch install may take a few minutes because it downloads a large wh
 ```bash
 python app.py
 ```
-Flask starts in debug mode and prints a URL such as `http://127.0.0.1:5000`. Open it in a browser, choose a leaf image, and the UI will report ìThe plant appears healthy...î or ìThis plant is most likely affected by...î along with confidence scores for all classes.
+Flask starts in debug mode and prints a URL such as `http://127.0.0.1:5000`. Open it in a browser, choose a leaf image, and the UI will report ‚ÄúThe plant appears healthy...‚Äù or ‚ÄúThis plant is most likely affected by...‚Äù along with confidence scores for all classes.
 
 #### Optional: test the API from the command line
 ```bash
@@ -124,6 +124,20 @@ project/
 - `static/styles.css`: Styling for the single-page UI.
 - `requirements.txt`: Pin list for Flask, Torch, Torchvision, Pillow, etc.
 - `sai_kiew.ipynb`: Jupyter notebook that trains EfficientNet-B0 on `dataset_split/`.
+
+## Model analysis
+- **Backbone:** EfficientNet-B0 fine-tuned on 15 tomato, potato, and pepper classes. model.py rebuilds the classifier head to match the checkpoint and keeps the network in eval mode on CPU or CUDA depending on availability.
+- **Preprocessing:** Images are converted to RGB, resized to 224x224 pixels, turned into tensors, and normalized with ImageNet statistics (means 0.485/0.456/0.406, stds 0.229/0.224/0.225). Training-time augmentation lives in sai_kiew.ipynb; inference stays deterministic.
+- **Outputs:** The /predict endpoint returns the top label, its confidence, and the full softmax probability list. Class display strings still originate from class_names.json, so keep that file aligned with the checkpoint outputs.
+- **Performance notes:** EfficientNet-B0 balances accuracy and speed for CPU inference. Swap in a heavier EfficientNet variant for better accuracy or prune or distill the model if latency becomes an issue.
+- **Limitations:** Accuracy degrades with blurry photos, mixed leaves, or classes not present in the training set. The model expects leaf-centric shots similar to those in dataset_split.
+
+## Web structure analysis
+- **Server side:** app.py initialises a single PlantDiseaseModel, serves the root route with index.html, and exposes /predict for JSON inference. It also loads class_names_display.json so the UI can show curated, user-friendly names.
+- **Template:** templates/index.html renders the upload flow, preview, prediction block, class list, and an information panel with causes, symptoms, and treatments. Vanilla JavaScript handles file reading, fetch requests, and DOM updates.
+- **Static assets:** static/styles.css provides the glassmorphism styling, grid layouts for good and bad photo examples, and responsive tweaks. Helpful images live under static/img/.
+- **Data flow:** The browser submits a FormData payload to /predict, receives JSON with probabilities, and updates the UI. When display labels exist, the class list uses them while inference still relies on class_names.json.
+- **Extensibility:** Add features by extending app.py, adjusting the template, and editing the stylesheet. For production, front the app with Gunicorn or another WSGI server and add logging, authentication, and upload validation.
 
 ## Troubleshooting & FAQs
 - **PyTorch fails to install or complains about CUDA:** Try rerunning `pip install -r requirements.txt`. CPU wheels install by default; GPU support is optional.
