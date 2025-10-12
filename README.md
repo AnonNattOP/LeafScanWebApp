@@ -157,4 +157,3 @@ Older Python releases signed the virtual-environment activation script with a ce
 - Customize `templates/index.html` and `static/styles.css` to improve the UI.
 - For deployment, run behind a production-ready server (Gunicorn, Uvicorn + ASGI adapter) and add logging, HTTPS, and request limits.
 
-Happy experimenting!
