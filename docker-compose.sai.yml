@@ -1,0 +1,16 @@
+services:
+  sai_kiew:
+    build:
+      context: ./project
+    restart: unless-stopped
+    environment:
+      PORT: ${SAI_PORT:-5000}
+    ports:
+      - "${SAI_PORT:-5000}:5000"
+    networks:
+      - portal_net
+
+networks:
+  portal_net:
+    external: true
+    name: utilizeserver_portal_net
