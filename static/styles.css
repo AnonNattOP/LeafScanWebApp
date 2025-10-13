@@ -68,6 +68,11 @@ h1 {
     object-fit: cover;
 }
 
+.photo-grid--good img {
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.2);
+}
+
 .photo-grid figcaption {
     margin-top: 0.5rem;
     font-size: 0.95rem;

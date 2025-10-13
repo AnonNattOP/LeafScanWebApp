@@ -1,4 +1,4 @@
-# Plant Disease Detection Web App
+﻿# Plant Disease Detection Web App
 
 This repository wraps a fine-tuned EfficientNet-B0 model in a lightweight Flask interface. Point it at a photo of a plant leaf and it returns the disease label along with the probability scores. The trained weights (`efficientnet_b0_plant_disease.pth`) and the basic front end are already included, so you can focus on running or customizing the app.
 
@@ -157,4 +157,3 @@ Older Python releases signed the virtual-environment activation script with a ce
 - Customize `templates/index.html` and `static/styles.css` to improve the UI.
 - For deployment, run behind a production-ready server (Gunicorn, Uvicorn + ASGI adapter) and add logging, HTTPS, and request limits.
 
-Happy experimenting!
