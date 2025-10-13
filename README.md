@@ -1,17 +1,38 @@
 ﻿# Plant Disease Detection Web App
 
+## Project Overview
 This repository wraps a fine-tuned EfficientNet-B0 model in a lightweight Flask interface. Point it at a photo of a plant leaf and it returns the disease label along with the probability scores. The trained weights (`efficientnet_b0_plant_disease.pth`) and the basic front end are already included, so you can focus on running or customizing the app.
 
-## Quick Start
-1. **Install Python 3.10 or newer.** Verify it works with `python --version`.
-2. **Download or clone this folder** to a convenient location.
-3. **Set up a virtual environment** (recommended) and install the dependencies from `requirements.txt`.
-4. **Check `class_names.json`.** It already contains the 15 labels the model was trained on; edit it only if you swap in a different checkpoint.
-5. **Run `python app.py`** and open the printed URL in your browser. The page will state whether the plant looks healthy or list the most likely disease.
+- Inference-ready EfficientNet-B0 weights are bundled so you can run predictions immediately.
+- A minimal Flask backend serves both the browser front end and a JSON `/predict` endpoint.
+- The responsive UI in `templates/index.html` visualises confidence scores and shares care tips.
 
-## Step-by-step setup
+## Requirements
+- Python 3.10 or newer with `pip`
+- Git (optional, for cloning)
+- A virtual environment tool such as `venv` (recommended)
+- `curl` (optional, for command-line endpoint testing)
 
-### 1. Create and activate a virtual environment
+## Installation
+### 1. Obtain the project files
+- Clone the repository or download it as an archive and extract it.
+- Ensure the model checkpoint (`efficientnet_b0_plant_disease.pth`) and label map (`class_names.json`) stay in the project root.
+
+```powershell
+# Windows (PowerShell)
+git clone <repository-url>
+cd project
+```
+
+```bash
+# macOS / Linux
+git clone <repository-url>
+cd project
+```
+
+If you downloaded a ZIP, unzip it and open a shell in the extracted folder instead of running `git clone`.
+
+### 2. Create and activate a virtual environment
 Pick the commands that match your operating system.
 
 ```powershell
@@ -28,14 +49,14 @@ source .venv/bin/activate
 
 When activation works, your prompt shows `(.venv)` before the current path. Deactivate with `deactivate` when you are done.
 
-### 2. Install the Python packages
+### 3. Install the Python packages
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 The first PyTorch install may take a few minutes because it downloads a large wheel. Add `--user` if you prefer per-user installs, and use `pip3` when your system distinguishes Python 3 from Python 2. All required packages (Flask, Torch, Torchvision, Pillow) are listed in `requirements.txt`.
 
-### 3. Review the class labels
+### 4. Validate the bundled assets
 `class_names.json` stores the human-readable labels that appear in the UI.
 - The file is already populated with the tomato, potato, and pepper classes that match the bundled checkpoint.
 - If you bring your own model, replace the entries so they match the new output order exactly.
@@ -43,48 +64,43 @@ The first PyTorch install may take a few minutes because it downloads a large wh
 
 > Tip: If you trained with `torchvision.datasets.ImageFolder`, the classes are sorted alphabetically by folder name, so you can copy the order straight from your training dataset.
 
-### 4. Launch the web application
+### 5. Capture the environment (recommended)
+For strict reproducibility, freeze the environment after installation so you can recreate it later or on another machine.
+
+```bash
+pip freeze > requirements.lock
+```
+Commit the generated `requirements.lock` file or store it alongside experiment notes.
+
+## Running the web application
+### Launch the development server
 ```bash
 python app.py
 ```
-Flask starts in debug mode and prints a URL such as `http://127.0.0.1:5000`. Open it in a browser, choose a leaf image, and the UI will report “The plant appears healthy...” or “This plant is most likely affected by...” along with confidence scores for all classes.
+Flask starts in debug mode and prints a URL such as `http://127.0.0.1:5000`. Open it in a browser, choose a leaf image, and the UI will report "The plant appears healthy..." or "This plant is most likely affected by..." along with confidence scores for all classes.
 
-#### Optional: test the API from the command line
+### Confirm the REST endpoint
 ```bash
 curl -F "image=@path/to/leaf.jpg" http://127.0.0.1:5000/predict
 ```
-The server responds with a JSON payload containing the predicted label and the probability list.
+The server responds with a JSON payload containing the predicted label and the probability list. Replace `path/to/leaf.jpg` with an actual image of a leaf.
+
+### Shut down
+Press `Ctrl+C` in the terminal to stop the Flask development server.
+
+## Reproducibility checklist
+- Use the same Python version (3.10+) and install dependencies via `pip install -r requirements.txt`.
+- Keep `efficientnet_b0_plant_disease.pth` and `class_names.json` in sync; mismatches cause incorrect predictions.
+- Document the `pip freeze` output (see step 5) when you publish results or hand off the project.
+- The dataset reference structure in `dataset_split/` shows the exact class names and split used during training.
+- Run `python -m pip check` to confirm there are no dependency conflicts before sharing the environment.
 
 ## Dataset snapshot (for retraining only)
 The repository includes `dataset_split/` as a reference to the tomato, potato, and pepper classes used during training. You do **not** need these files to run the web app, but they are handy if you want to fine-tune the model again or regenerate label files.
 
-```
-dataset_split/
-|-- train/
-|   |-- Pepper__bell___Bacterial_spot/
-|   |-- Pepper__bell___healthy/
-|   |-- Potato___Early_blight/
-|   |-- Potato___healthy/
-|   |-- Potato___Late_blight/
-|   |-- Tomato_Bacterial_spot/
-|   |-- Tomato_Early_blight/
-|   |-- Tomato_healthy/
-|   |-- Tomato_Late_blight/
-|   |-- Tomato_Leaf_Mold/
-|   |-- Tomato_Septoria_leaf_spot/
-|   |-- Tomato_Spider_mites_Two_spotted_spider_mite/
-|   |-- Tomato__Target_Spot/
-|   |-- Tomato__Tomato_mosaic_virus/
-|   `-- Tomato__Tomato_YellowLeaf__Curl_Virus/
-|-- val/
-|   `-- ... (same class folders as train)
-`-- test/
-    `-- ... (same class folders as train)
-```
-
 ### Retrain or update the model
-Use the `sai_kiew.ipynb` notebook to fine-tune EfficientNet-B0 on the bundled dataset:
-1. Open `sai_kiew.ipynb` in Jupyter Notebook or VS Code.
+Use the `plant_disease_training.ipynb` notebook to fine-tune EfficientNet-B0 on the bundled dataset:
+1. Open `plant_disease_training.ipynb` in Jupyter Notebook or VS Code.
 2. Run the notebook; it loads data from `dataset_split/`, trains the model, and exports a new checkpoint (for example, `efficientnet_b0_plant_disease.pth`).
 3. Copy the new `.pth` file into the project root (overwrite the old one if desired).
 4. Regenerate `class_names.json` if the class order changed.
@@ -101,43 +117,38 @@ Update the command to match your dataset path if you store data elsewhere.
 ## Project structure
 ```
 project/
-|-- app.py                # Flask entry point and HTTP endpoints
-|-- model.py              # EfficientNet loader and inference helpers
+|-- app.py                      # Flask entry point and HTTP endpoints
+|-- model.py                    # EfficientNet loader and inference helpers
+|-- class_names.json            # Label IDs aligned with the checkpoint outputs
+|-- class_names_display.json    # Optional display names shown in the UI
 |-- efficientnet_b0_plant_disease.pth
-|-- class_names.json      # Human-readable labels shown in the UI
-|-- requirements.txt      # Python dependencies used by the app
-|-- dataset_split/        # Optional reference dataset for retraining
+|-- requirements.txt            # Runtime dependencies for the web app
+|-- Dockerfile                  # Container recipe for reproducible deployments
+|-- docker-compose.sai.yml      # Example compose file used during local experiments
+|-- plant_disease_training.ipynb
 |-- templates/
-|   `-- index.html        # Upload form, fetch logic, result rendering
+|   `-- index.html              # Upload form, fetch logic, and UI rendering
 |-- static/
-|   `-- styles.css        # Basic styling for the web UI
-`-- sai_kiew.ipynb        # Notebook used to retrain EfficientNet-B0
+|   |-- styles.css              # Glassmorphism styling and responsive rules
+|   `-- img/
+|       |-- should/             # Example images that yield good predictions
+|       `-- shouldnot/          # Example images to avoid
+|-- dataset_split/              # Reference dataset (train/val/test folders)
+`-- README.md
 ```
+The repository also contains a `.venv/` folder and `__pycache__/` directory when you run the code locally; these artefacts are not required for distribution.
 
 **File reference**
-- `app.py`: Boots the Flask app, exposes `/` for the UI and `/predict` for JSON inference.
-- `model.py`: Wraps the EfficientNet-B0 weights, handles preprocessing, inference, and label lookups.
-- `efficientnet_b0_plant_disease.pth`: Fine-tuned checkpoint exported from training (e.g., `sai_kiew.ipynb`).
-- `class_names.json`: Ready-to-use labels aligned with the model's output order.
-- `dataset_split/`: Reference dataset split so you can retrain or regenerate labels (not required for inference).
-- `templates/index.html`: Front-end page that collects the image and posts it to `/predict`.
-- `static/styles.css`: Styling for the single-page UI.
-- `requirements.txt`: Pin list for Flask, Torch, Torchvision, Pillow, etc.
-- `sai_kiew.ipynb`: Jupyter notebook that trains EfficientNet-B0 on `dataset_split/`.
-
-## Model analysis
-- **Backbone:** EfficientNet-B0 fine-tuned on 15 tomato, potato, and pepper classes. model.py rebuilds the classifier head to match the checkpoint and keeps the network in eval mode on CPU or CUDA depending on availability.
-- **Preprocessing:** Images are converted to RGB, resized to 224x224 pixels, turned into tensors, and normalized with ImageNet statistics (means 0.485/0.456/0.406, stds 0.229/0.224/0.225). Training-time augmentation lives in sai_kiew.ipynb; inference stays deterministic.
-- **Outputs:** The /predict endpoint returns the top label, its confidence, and the full softmax probability list. Class display strings still originate from class_names.json, so keep that file aligned with the checkpoint outputs.
-- **Performance notes:** EfficientNet-B0 balances accuracy and speed for CPU inference. Swap in a heavier EfficientNet variant for better accuracy or prune or distill the model if latency becomes an issue.
-- **Limitations:** Accuracy degrades with blurry photos, mixed leaves, or classes not present in the training set. The model expects leaf-centric shots similar to those in dataset_split.
-
-## Web structure analysis
-- **Server side:** app.py initialises a single PlantDiseaseModel, serves the root route with index.html, and exposes /predict for JSON inference. It also loads class_names_display.json so the UI can show curated, user-friendly names.
-- **Template:** templates/index.html renders the upload flow, preview, prediction block, class list, and an information panel with causes, symptoms, and treatments. Vanilla JavaScript handles file reading, fetch requests, and DOM updates.
-- **Static assets:** static/styles.css provides the glassmorphism styling, grid layouts for good and bad photo examples, and responsive tweaks. Helpful images live under static/img/.
-- **Data flow:** The browser submits a FormData payload to /predict, receives JSON with probabilities, and updates the UI. When display labels exist, the class list uses them while inference still relies on class_names.json.
-- **Extensibility:** Add features by extending app.py, adjusting the template, and editing the stylesheet. For production, front the app with Gunicorn or another WSGI server and add logging, authentication, and upload validation.
+- `app.py`: Boots the Flask app, exposes `/` for the UI and `/predict` for JSON inference, and wires in the model loader.
+- `model.py`: Wraps EfficientNet-B0, handles preprocessing, inference, and label lookups for both display and prediction labels.
+- `class_names.json`: Canonical class order exported from training; must match the checkpoint tensor order.
+- `class_names_display.json`: Optional mapping that supplies friendly names for the front end while predictions still use `class_names.json`.
+- `efficientnet_b0_plant_disease.pth`: Fine-tuned EfficientNet-B0 weights ready for inference.
+- `templates/index.html`: Front-end page that collects the image, makes fetch calls, and renders results.
+- `static/styles.css`: Styling for the single-page UI; references example images under `static/img/`.
+- `dataset_split/`: Reference dataset structure (train/val/test) for retraining or regenerating label files; not needed for inference.
+- `plant_disease_training.ipynb`: Jupyter notebook that fine-tunes EfficientNet-B0 and exports updated checkpoints.
+- `Dockerfile` / `docker-compose.sai.yml`: Containerisation assets to rebuild the environment consistently across machines.
 
 ## Troubleshooting & FAQs
 - **PyTorch fails to install or complains about CUDA:** Try rerunning `pip install -r requirements.txt`. CPU wheels install by default; GPU support is optional.
@@ -151,9 +162,4 @@ Older Python releases signed the virtual-environment activation script with a ce
 1. Prefer installing a newer Python build (3.10.11+, 3.11.3+, 3.12.x), delete `.venv`, and recreate it with `python -m venv .venv`. The fresh `Activate.ps1` carries a valid signature.
 2. Short-term, run PowerShell with a relaxed execution policy (`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`) before activating, or use `cmd` and run `.venv\Scripts\activate.bat`.
 3. As a last resort, remove the signature block at the bottom of `.venv\Scripts\Activate.ps1` (between `# SIG # Begin signature block` and `# SIG # End signature block`) so it runs under `RemoteSigned`.
-
-## Next steps
-- Swap in a different checkpoint and update `class_names.json` to match your new classes.
-- Customize `templates/index.html` and `static/styles.css` to improve the UI.
-- For deployment, run behind a production-ready server (Gunicorn, Uvicorn + ASGI adapter) and add logging, HTTPS, and request limits.
 
