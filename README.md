@@ -165,14 +165,17 @@ Older Python releases signed the virtual-environment activation script with a ce
 
 ### Demo
 
-1. Demo
-    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/demo.mp4
 
-2. Easy
-    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/easy.mp4
+https://github.com/user-attachments/assets/adfaa80f-0bc2-4244-833b-de720a8da9c8
 
-3. Medium
-    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/medium.mp4
+https://github.com/user-attachments/assets/e2153f39-115e-4401-9f6d-02fad914ae6a
 
-4. Hard
-   https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/hard.mp4
+https://github.com/user-attachments/assets/4f46a6f8-5664-4fd7-920e-3459c73e16fc
+
+https://github.com/user-attachments/assets/1f6ba39c-3267-49b9-a14b-53eeeb06678c
+
+
+1. Demo: https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/demo.mp4 
+2. Easy: https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/easy.mp4
+3. Medium: https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/medium.mp4
+4. Hard: https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/hard.mp4
