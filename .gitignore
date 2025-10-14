@@ -1,0 +1,43 @@
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+*.venv
+
+# Build output
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Test / coverage
+.pytest_cache/
+.coverage*
+htmlcov/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Environment & secrets
+.env
+.env.*
+*.env
+*.env.*
+
+# Logs
+*.log
+
+# IDE settings
+.vscode/
+.idea/
+*.code-workspace
+
+# OS cruft
+.DS_Store
+Thumbs.db
