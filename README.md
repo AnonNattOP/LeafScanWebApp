@@ -163,3 +163,16 @@ Older Python releases signed the virtual-environment activation script with a ce
 2. Short-term, run PowerShell with a relaxed execution policy (`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`) before activating, or use `cmd` and run `.venv\Scripts\activate.bat`.
 3. As a last resort, remove the signature block at the bottom of `.venv\Scripts\Activate.ps1` (between `# SIG # Begin signature block` and `# SIG # End signature block`) so it runs under `RemoteSigned`.
 
+### Demo
+
+1. Demo
+    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/demo.mp4
+
+2. Easy
+    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/easy.mp4
+
+3. Medium
+    https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/medium.mp4
+
+4. Hard
+   https://github.com/AnonNattOP/LeafScanWebApp/blob/441b91c56fb2c3c8054674ffcfc8218ff425509c/hard.mp4
