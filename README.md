@@ -123,8 +123,6 @@ project/
 |-- class_names_display.json    # Optional display names shown in the UI
 |-- efficientnet_b0_plant_disease.pth
 |-- requirements.txt            # Runtime dependencies for the web app
-|-- Dockerfile                  # Container recipe for reproducible deployments
-|-- docker-compose.sai.yml      # Example compose file used during local experiments
 |-- plant_disease_training.ipynb
 |-- templates/
 |   `-- index.html              # Upload form, fetch logic, and UI rendering
