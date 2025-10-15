@@ -36,7 +36,7 @@ class PlantDiseaseModel:
             model = raw.to(self.device)
             model.eval()
             try:
-                num_classes = model.classifier[1].out_features  # type: ignore[index]
+                num_classes = model.classifier[1].out_features  
             except (AttributeError, IndexError):
                 raise ValueError("Loaded model does not expose classifier information") from None
             return model, num_classes
@@ -51,7 +51,7 @@ class PlantDiseaseModel:
 
         num_classes = state_dict["classifier.1.weight"].shape[0]
         backbone = efficientnet_b0(weights=None)
-        in_features = backbone.classifier[1].in_features  # type: ignore[index]
+        in_features = backbone.classifier[1].in_features  
         backbone.classifier[1] = nn.Linear(in_features, num_classes)
         backbone.load_state_dict(state_dict)
         backbone.to(self.device)
